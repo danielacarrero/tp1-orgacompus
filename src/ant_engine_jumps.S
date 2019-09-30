@@ -37,40 +37,62 @@ fin:
 .ent new_orientation
 
 new_orientation:
-	.frame fp, 16, ra
+	.frame fp, 32, ra
 	.set noreorder
 	.cpload t9
 	.set reorder
-	subu sp, sp, 16
-	cpstore 0
-	sw fp, 4(sp)
-	sw ra, 8(sp)
+	subu sp, sp, 32
+	cpstore 16
+	sw fp, 20(sp)
+	sw ra, 24(sp)
 	move fp, sp
+	
+	move s0, a0
+	move s1, a1
 
-	beq a0, NORTH, N
-	beq a0, SOUTH, S
-	beq a0, EAST, E
-	beq a0 WEST, W
+	move a0, s1 //El primer argumento de decide sea rule
+	sw a0, 0(sp)// Ya lo pongo en el stack
+
+	beq s0, NORTH, N
+	beq s0, SOUTH, S
+	beq s0, EAST, E
+	beq s0 WEST, W
 
 	move v0, $0
 	jal doPanic
 
 fin:
-	lw fp, 4(sp)
-	lw ra, 8(sp)
-	addu sp, sp, 16
+	lw fp, 20(sp)
+	lw ra, 24(sp)
+	addu sp, sp, 32
 	jr ra
 	
-N:
+N:	
+	lw a1, WEST
+	lw a2, EAST
+	sw a1, 4(sp)
+	sw a2, 8(sp)
 	jal decide
 	j fin
 S:
+	lw a1, EAST
+	lw a2, WEST
+	sw a1, 4(sp)
+	sw a2, 8(sp)
 	jal decide
 	j fin
 E:
+	lw a1, NORTH
+	lw a2, SOUTH
+	sw a1, 4(sp)
+	sw a2, 8(sp)
 	jal decide
 	j fin
 W:
+	lw a1, SOUTH
+	lw a2, NORTH
+	sw a1, 4(sp)
+	sw a2, 8(sp)
 	jal decide
 	j fin
 
