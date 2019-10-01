@@ -1,5 +1,6 @@
 #include <regdef.h>
 
+
 .data
 ime: .asciiz "TP1 2Q2019: Implement me!"
 allowed_forward: .word step_north, step_south, step_east, step_west
@@ -86,12 +87,12 @@ move_forward:
   la t3, allowed_forward
 
   addu t4, t3, t1
-  lw t4, 0(t4)
+  lw t9, 0(t4)
 
   sw a0, 0(sp)
   sw a1, 4(sp)
 
-  jal t4
+  jal t9
 
   move a0, s0
 	move a1, s1
