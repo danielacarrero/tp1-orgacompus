@@ -1,32 +1,36 @@
 #include <regdef.h>
-#include "ant_engine.h"
 
 
 .data
 ime: .asciiz "TP1 2Q2019: Implement me!"
 err: .asciiz "Unknown orientation %d"
 
+.text
+.align 2
+.globl decide
+.ent decide
+
 decide:
 	.frame fp, 8, ra
 	.set noreorder
 	.cpload t9
 	.set reorder
-	subu sp, sp, 8
-	cpstore 0
+	addiu sp, sp, (-8)
+	.cprestore 0
 	sw fp, 4(sp)
 	move fp, sp
 
-	beq a0, RIGHT, go_right
-	
+	beq a0, 1, go_right
+
 	move v0, a1
-	j fin
+	j fin3
 
-go_right:	
-	move v0, a2	
+go_right:
+	move v0, a2
 
-fin:	
+fin3:
 	lw fp, 4(sp)
-	addu sp, sp, 8
+	addiu sp, sp, 8
 	jr ra
 .end decide
 
@@ -43,40 +47,38 @@ new_orientation:
 	.set noreorder
 	.cpload t9
 	.set reorder
-	subu sp, sp, 40
-	cpstore 24
+	addiu sp, sp, (-40)
+	.cprestore 24
 	sw fp, 28(sp)
 	sw ra, 32(sp)
 	move fp, sp
-	
+
 	move s0, a0
 	move s1, a1
 
-	beq s0, NORTH, N
-	beq s0, SOUTH, S
-	beq s0, EAST, E
-	beq s0 WEST, W
+	beq s0, 0, N
+	beq s0, 1, S
+	beq s0, 2, E
+	beq s0, 3, W
 
 	move v0, $0
-	move a0, err
-	move a1, s0
+	la a0, err
 	sw a0, 0(sp)
-	sw a1, 4(sp)
-	jal panicd
+	jal doPanic
 
 fin:
-	sw v0, 16(sp)//guardo en la posicion de la var local el rtdo
-	lw a0, s0	
-	lw a1, s1 //Vuelvo a dejar los regs $a como estaban
+	sw v0, 16(sp)
+	move a0, s0
+	move a1, s1
 	lw fp, 28(sp)
 	lw ra, 32(sp)
-	addu sp, sp, 40
+	addiu sp, sp, 40
 	jr ra
-	
-N:	
+
+N:
 	move a0, s1
-	lw a1, WEST
-	lw a2, EAST
+	lw a1, 3
+	lw a2, 2
 	sw a0, 0(sp)
 	sw a1, 4(sp)
 	sw a2, 8(sp)
@@ -84,17 +86,17 @@ N:
 	j fin
 S:
 	move a0, s1
-	lw a1, EAST
-	lw a2, WEST
-	sw a0, 0(sp)	
+	lw a1, 2
+	lw a2, 3
+	sw a0, 0(sp)
 	sw a1, 4(sp)
 	sw a2, 8(sp)
 	jal decide
 	j fin
 E:
 	move a0, s1
-	lw a1, NORTH
-	lw a2, SOUTH
+	lw a1, 0
+	lw a2, 1
 	sw a0, 0(sp)
 	sw a1, 4(sp)
 	sw a2, 8(sp)
@@ -102,16 +104,16 @@ E:
 	j fin
 W:
 	move a0, s1
-	lw a1, SOUTH
-	lw a2, NORTH
-	sw a0, 0(sp)	
+	lw a1, 1
+	lw a2, 0
+	sw a0, 0(sp)
 	sw a1, 4(sp)
 	sw a2, 8(sp)
 	jal decide
 	j fin
 
-		 	
-	
+
+
 
 .end new_orientation
 
@@ -124,73 +126,72 @@ move_forward:
 	.set noreorder
 	.cpload t9
 	.set reorder
-	subu sp, sp, 32
-	cpstore 16
+	addiu sp, sp, (-32)
+	.cprestore 16
 	sw fp, 20(sp)
 	sw ra, 24(sp)
 	move fp, sp
-	
-	move v0, a0//voy poniendo ant en lo que se devuelve
+
+	move v0, a0
 
 	move s0, a0
 	move s1, a1
 	move s2, a2
 
-	beq 8(s0), NORTH, N
-	beq 8(s0), SOUTH, S
-	beq 8(s0), EAST, E
-	beq 8(s0), WEST, W
-	
-	move a0, err
-	move a1, 8(s0)
-	sw a0, 0(sp)
-	sw a1, 4(sp)
-	jal panicd
+	lw t0, 8(s0)
+	beq t0, 0, N2
+	beq t0, 1, S2
+	beq t0, 2, E2
+	beq t0, 3, W2
 
-fin:
-	lw a0, s0	
-	lw a1, s1 //Vuelvo a dejar los regs $a como estaban
-	lw a2, s2
+	la a0, err
+	sw a0, 0(sp)
+	jal doPanic
+
+fin2:
+	move a0, s0
+	move a1, s1
+	move a2, s2
 	lw fp, 20(sp)
 	lw ra, 24(sp)
-	addu sp, sp, 32
+	addiu sp, sp, 32
 	jr ra
-	
-N:	
-	move a0, 4(s0)
-	subu a1, 4(s0), 1
-	lw a2, s2
+
+N2:
+	lw a0, 4(s0)
+	addiu a1, a0, (-1)
+	move a2, s2
 	sw a0, 0(sp)
 	sw a1, 4(sp)
 	sw a2, 8(sp)
-	jal adjust
-	j fin
-S:
-	move a0, 4(s0)
-	addu a1, 4(s0), 1
-	lw a2, s2
-	sw a0, 0(sp)	
-	sw a1, 4(sp)
-	sw a2, 8(sp)
-	jal adjust
-	j fin
-E:
-	move a0, (s0)
-	addu a1, (s0), 1
-	lw a2, s1
+	jal doAdjust
+	j fin2
+S2:
+	lw a0, 4(s0)
+	addiu a1, a0, 1
+	move a2, s2
 	sw a0, 0(sp)
 	sw a1, 4(sp)
 	sw a2, 8(sp)
-	jal adjust
-	j fin
-W:
-	move a0, (s0)
-	subu a1, (s0), 1
-	lw a2, s1
-	sw a0, 0(sp)	
+	jal doAdjust
+	j fin2
+E2:
+	lw a0, 0(s0)
+	addiu a1, a0, 1
+	move a2, s1
+	sw a0, 0(sp)
 	sw a1, 4(sp)
 	sw a2, 8(sp)
-	jal adjust
-	j fin
-	
+	jal doAdjust
+	j fin2
+W2:
+	lw a0, 0(s0)
+	addiu a1, a0, (-1)
+	move a2, s1
+	sw a0, 0(sp)
+	sw a1, 4(sp)
+	sw a2, 8(sp)
+	jal doAdjust
+	j fin2
+
 .end move_forward
