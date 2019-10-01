@@ -66,6 +66,8 @@ new_orientation:
 .globl move_forward
 .ent move_forward
 
+allowed_forward: .space 4	# 4-element func table
+
 move_forward:
     .frame fp, 32, ra
 	.set noreorder
@@ -81,7 +83,123 @@ move_forward:
 	move s1, a1
 	move s2, a2
 
+	la t0, allowed_forward	# Start of table
 
-    la a0, ime
-    jal doPanic
+
+    move v0, $0     # No deberia llegar aca
+	la a0, err
+	sw a0, 0(sp)
+	jal doPanic
 .end move_forward
+
+.text
+.align 2
+.globl step_west
+.ent step_west
+
+step_west:
+	.frame fp, 16, ra
+	.set noreorder
+	.cpload t9
+	,set reorder
+	addiu sp, sp, (-16)
+	.cprestore 0	# No se que va desde aca
+	sw fp, 4(sp)
+	move fp, sp		# Hasta aca
+
+	move s0, a0
+	move s1, a1
+
+	la a0, 0(s0)
+	lw t0, 0(s0)
+	addiu a1, t0, (-1)
+	move a2, s1
+	sw a0, 0(sp)
+	sw a1, 4(sp)
+	sw a2, 8(sp)
+	jal doAdjust
+.end step_west
+
+.text
+.align 2
+.globl step_east
+.ent step_east
+
+step_east:
+	.frame fp, 16, ra
+	.set noreorder
+	.cpload t9
+	,set reorder
+	addiu sp, sp, (-16)
+	.cprestore 0	# No se que va desde aca
+	sw fp, 4(sp)
+	move fp, sp		# Hasta aca
+
+	move s0, a0
+	move s1, a1
+
+	la a0, 0(s0)
+	lw t0, 0(s0)
+	addiu a1, t0, 1
+	move a2, s1
+	sw a0, 0(sp)
+	sw a1, 4(sp)
+	sw a2, 8(sp)
+	jal doAdjust
+.end step_east
+
+.text
+.align 2
+.globl step_north
+.ent step_north
+
+step_north:
+	.frame fp, 16, ra
+	.set noreorder
+	.cpload t9
+	,set reorder
+	addiu sp, sp, (-16)
+	.cprestore 0	# No se que va desde aca
+	sw fp, 4(sp)
+	move fp, sp		# Hasta aca
+
+	move s0, a0
+	move s1, a1
+
+	la a0, 4(s0)
+	lw t0, 4(s0)
+	addiu a1, t0, (-1)
+	move a2, s2
+	sw a0, 0(sp)
+	sw a1, 4(sp)
+	sw a2, 8(sp)
+	jal doAdjust
+.end step_north
+
+.text
+.align 2
+.globl step_south
+.ent step_south
+
+step_south:
+	.frame fp, 16, ra
+	.set noreorder
+	.cpload t9
+	,set reorder
+	addiu sp, sp, (-16)
+	.cprestore 0	# No se que va desde aca
+	sw fp, 4(sp)
+	move fp, sp		# Hasta aca
+
+	move s0, a0
+	move s1, a1
+
+	la a0, 0(s0)
+	lw t0, 0(s0)
+	addiu a1, t0, 1
+	move a2, s1
+	sw a0, 0(sp)
+	sw a1, 4(sp)
+	sw a2, 8(sp)
+	jal doAdjust
+.end step_south
