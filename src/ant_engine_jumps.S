@@ -3,7 +3,8 @@
 
 .data
 ime: .asciiz "TP1 2Q2019: Implement me!"
-err: .asciiz "Unknown orientation %d"
+err: .asciiz "Unknown orientation"
+err2: .asciiz "Unknown orientation2"
 
 .text
 .align 2
@@ -77,8 +78,8 @@ fin:
 
 N:
 	move a0, s1
-	lw a1, 3
-	lw a2, 2
+	li a1, 3
+	li a2, 2
 	sw a0, 0(sp)
 	sw a1, 4(sp)
 	sw a2, 8(sp)
@@ -86,8 +87,8 @@ N:
 	j fin
 S:
 	move a0, s1
-	lw a1, 2
-	lw a2, 3
+	li a1, 2
+	li a2, 3
 	sw a0, 0(sp)
 	sw a1, 4(sp)
 	sw a2, 8(sp)
@@ -95,8 +96,8 @@ S:
 	j fin
 E:
 	move a0, s1
-	lw a1, 0
-	lw a2, 1
+	li a1, 0
+	li a2, 1
 	sw a0, 0(sp)
 	sw a1, 4(sp)
 	sw a2, 8(sp)
@@ -104,18 +105,17 @@ E:
 	j fin
 W:
 	move a0, s1
-	lw a1, 1
-	lw a2, 0
+	li a1, 1
+	li a2, 0
 	sw a0, 0(sp)
 	sw a1, 4(sp)
 	sw a2, 8(sp)
 	jal decide
 	j fin
 
-
-
-
 .end new_orientation
+
+
 
 .text
 .align 2
@@ -132,19 +132,18 @@ move_forward:
 	sw ra, 24(sp)
 	move fp, sp
 
-	move v0, a0
-
 	move s0, a0
 	move s1, a1
 	move s2, a2
 
-	lw t0, 8(s0)
-	beq t0, 0, N2
-	beq t0, 1, S2
-	beq t0, 2, E2
-	beq t0, 3, W2
+	lw t4, 8(s0)
 
-	la a0, err
+	beq t4, 0, N2
+	beq t4, 1, S2
+	beq t4, 2, E2
+	beq t4, 3, W2
+
+	la a0, err2
 	sw a0, 0(sp)
 	jal doPanic
 
@@ -152,14 +151,16 @@ fin2:
 	move a0, s0
 	move a1, s1
 	move a2, s2
+	move v0, a0
 	lw fp, 20(sp)
 	lw ra, 24(sp)
 	addiu sp, sp, 32
 	jr ra
 
 N2:
-	lw a0, 4(s0)
-	addiu a1, a0, (-1)
+	la a0, 4(s0)
+	lw t0, 4(s0)
+	addiu a1, t0, (-1)
 	move a2, s2
 	sw a0, 0(sp)
 	sw a1, 4(sp)
@@ -167,8 +168,9 @@ N2:
 	jal doAdjust
 	j fin2
 S2:
-	lw a0, 4(s0)
-	addiu a1, a0, 1
+	la a0, 4(s0)
+	lw t0, 4(s0)
+	addiu a1, t0, 1
 	move a2, s2
 	sw a0, 0(sp)
 	sw a1, 4(sp)
@@ -176,8 +178,9 @@ S2:
 	jal doAdjust
 	j fin2
 E2:
-	lw a0, 0(s0)
-	addiu a1, a0, 1
+	la a0, 0(s0)
+	lw t0, 0(s0)
+	addiu a1, t0, 1
 	move a2, s1
 	sw a0, 0(sp)
 	sw a1, 4(sp)
@@ -185,8 +188,9 @@ E2:
 	jal doAdjust
 	j fin2
 W2:
-	lw a0, 0(s0)
-	addiu a1, a0, (-1)
+	la a0, 0(s0)
+	lw t0, 0(s0)
+	addiu a1, t0, (-1)
 	move a2, s1
 	sw a0, 0(sp)
 	sw a1, 4(sp)
