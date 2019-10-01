@@ -85,6 +85,10 @@ move_forward:
 
 	la t0, allowed_forward	# Start of table
 
+	la t1, step_west
+	sw t1, 0(t0)
+	la t1, step_east
+	sw t1, 1(t0)
 
     move v0, $0     # No deberia llegar aca
 	la a0, err
