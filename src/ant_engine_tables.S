@@ -36,7 +36,8 @@ new_orientation:
 
     la t0, rotation_rules
 
-    addu v0, t0, t4 # Cargo en t4 el valor almacenado en la posicion de la tabla [Row, Col]
+    addu t6, t0, t4 # Cargo en t4 el valor almacenado en la posicion de la tabla [Row, Col]
+    lw v0, 0(t6)
 
   move a0, s0
 	move a1, s1
@@ -196,7 +197,7 @@ step_north:
 	la a0, 4(s0)
 	lw t0, 4(s0)
 	addiu a1, t0, (-1)
-	move a2, s2
+	move a2, s1
 	sw a0, 0(sp)
 	sw a1, 4(sp)
 	sw a2, 8(sp)
@@ -229,8 +230,8 @@ step_south:
 	move s0, a0
 	move s1, a1
 
-	la a0, 0(s0)
-	lw t0, 0(s0)
+	la a0, 4(s0)
+	lw t0, 4(s0)
 	addiu a1, t0, 1
 	move a2, s1
 	sw a0, 0(sp)
