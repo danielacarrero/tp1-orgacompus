@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
 #define MEMSIZE 65536
 #define BLOCKSIZE 64
@@ -30,6 +29,8 @@ unsigned int get_offset (unsigned int address);
 
 unsigned int find_set(unsigned int address);
 
+unsigned int get_tag(unsigned int address);
+
 unsigned int select_oldest(unsigned int setnum);
 
 void read_tocache(unsigned int blocknum, unsigned int way, unsigned int set);
@@ -37,5 +38,7 @@ void read_tocache(unsigned int blocknum, unsigned int way, unsigned int set);
 unsigned char read_byte(unsigned int address);
 
 void write_byte(unsigned int address, unsigned char value);
+
+void write_tomem(unsigned int address, unsigned char value);
 
 float get_miss_rate();
