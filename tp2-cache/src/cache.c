@@ -64,6 +64,9 @@ void read_tocache(unsigned int blocknum, unsigned int way, unsigned int set) {
 }
 
 unsigned char read_byte(unsigned int address) {
+    
+    cache->accesses++;
+
     unsigned int tag = get_tag(address);
     unsigned int set = find_set(address);
     unsigned int way = ERROR;
@@ -86,6 +89,7 @@ unsigned char read_byte(unsigned int address) {
     }
 
     if (!found) {
+        cache->misses++;
         read_tocache(address, way, set);
     }
 
@@ -103,5 +107,5 @@ void write_tomem(unsigned int address, unsigned char value) {
 }
 
 float get_miss_rate() {
-    return cache->miss_rate;
+    return (cache->misses / cache->accesses);
 }
