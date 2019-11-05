@@ -3,14 +3,10 @@
 
 #include "artist_ant.h"
 
-#ifdef USE_COL_MAJOR
-#define OFFSET_AT(x,y,r,c)  ((x) + (c) * (y))
-#else
-#define OFFSET_AT(x,y,r,c) ((x) * (r) + (y))
-#endif
+#define OFFSET_AT(x,y,r,c) ((x) * (c) + (y))
 
 typedef struct {
-    colour_t *grid;
+  colour_t *grid;
 } square_grid_t;
 
 #endif /* __SQUARE_GRID_H__ */

@@ -17,10 +17,6 @@
 
 static FILE *outfile; 
 
-#ifdef USE_GLOBAL_GRID_DIMS
-uint32_t relevant_bounds[4];
-#endif /* USE_GLOBAL_GRID_DIMS */
-
 static void
 show_warn(char *p)
 {
@@ -106,7 +102,6 @@ main(int argc, char **argv)
   ant_t *artist_ant;
   grid_handler_t *grid;
 
-  char initial_colour_spec;
   colour_t initial;
   colour_fn next_colour_fn;
   rule_fn rules;
@@ -136,13 +131,6 @@ main(int argc, char **argv)
 
         grid_width = atoui32(optarg, 0, s);
         grid_height = atoui32(optarg, s+1, grid_spec_len);
-
-#ifdef USE_GLOBAL_GRID_DIMS
-        relevant_bounds[0] = grid_height;
-        relevant_bounds[1] = grid_height;
-        relevant_bounds[2] = grid_width;
-        relevant_bounds[3] = grid_width;
-#endif /* USE_GLOBAL_GRID_DIMS */
 
         break;
       case 'p': /* palette */
@@ -274,7 +262,7 @@ grid_out(grid_handler_t* grid)
         fprintf(outfile, "%-3d %-3d %-3d ", 0, 0, 0);
         break;
       default:
-        fprintf(stderr, "Invalid grid colour: %c\n", c);
+        fprintf(stderr, "Invalid: %d\n", c);
         exit(2);
       }
     }

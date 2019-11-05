@@ -22,7 +22,7 @@ get_colour(char c)
 void*
 xalloc(size_t n, size_t size)
 {
-  void *p = calloc(n,size);
+  void *p = calloc(n, size);
 
   if (!p) {
     panicd("alloc failed for %zu elements * bytes", n * size);

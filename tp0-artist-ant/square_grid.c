@@ -34,12 +34,13 @@ grid_handler_t*
 make_grid(const uint32_t rows, const uint32_t cols, const colour_t initial)
 {
   uint32_t i;
+  const uint32_t elems = rows * cols;
   grid_rows = rows;
   grid_cols = cols;
 
-  sq_grid.grid =  (colour_t *) xalloc (rows * cols, sizeof(colour_t));
+  sq_grid.grid =  (colour_t *) xalloc (elems, sizeof(colour_t));
 
-  for (i = 0; i < rows * cols; i++) {
+  for (i = 0 ; i < elems; i++) {
     sq_grid.grid[i] = initial;
   }
 

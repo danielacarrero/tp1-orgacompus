@@ -42,9 +42,8 @@ make_palette(const char *colour_spec, size_t palette_spec_len)
     }
 
     present[each] = each;
-    palette[i >> 1] = each;
+    palette[i] = each;
   }
- 
   return next_colour;
 }
 
@@ -52,8 +51,9 @@ static colour_t
 next_colour(void)
 {
   static unsigned int current_index = 0;
-  const unsigned int at = current_index++ % palette_len;
+  const unsigned int at = ++current_index % palette_len;
+  colour_t c = palette[at];
 
-  return palette[at];
+  return c;
 }
 
