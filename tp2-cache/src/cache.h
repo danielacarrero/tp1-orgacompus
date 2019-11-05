@@ -1,24 +1,28 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
-#define WAYJUMP 32
+#define MEMSIZE 65536
+#define BLOCKSIZE 64
+#define WAYSIZE 32
+#define WAYS 8
 
-typedef struct {
-    char data[64];
+struct cache_block_t {
+    char data[BLOCKSIZE];
     char validation;
     size_t timestamp;
     char tag;
-} cache_block;
+};
 
-typedef struct {
-    cache_block data[256];
+struct cache_t {
+    struct cache_block_t data[WAYS * WAYSIZE];
     size_t accesses;
     float miss_rate;
-} cache;
+};
 
-typedef struct {
-    char data[64];
-} memory;
+struct memory_t {
+    char data[MEMSIZE];
+};
 
 void init();
 
