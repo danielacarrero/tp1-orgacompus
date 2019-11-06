@@ -27,8 +27,8 @@ unsigned int find_set(unsigned int address) {
     return (address & INDEX_MASK); // Pone todo en cero y se queda con los bits de index
 }
 
-unsigned int get_tag(unsigned int address) {
-    return (address & TAG_MASK); // Pone todo en cero y se queda con los bits de tag
+char get_tag(unsigned int address) {
+    return (char)(address & TAG_MASK); // Pone todo en cero y se queda con los bits de tag
 }
 
 unsigned int select_oldest(unsigned int setnum) {
@@ -58,7 +58,7 @@ unsigned char read_byte(unsigned int address) {
     
     cache->accesses++;
 
-    unsigned int tag = get_tag(address);
+    char tag = get_tag(address);
     unsigned int set = find_set(address);
     unsigned int offset = get_offset(address);
     unsigned int way = ERROR;
@@ -95,7 +95,7 @@ void write_byte(unsigned int address, unsigned char value) {
     
     cache->accesses++;
 
-    unsigned int tag = get_tag(address);
+    char tag = get_tag(address);
     unsigned int set = find_set(address);
     unsigned int offset = get_offset(address);
     unsigned int way = ERROR;
@@ -139,6 +139,9 @@ void write_tomem(unsigned int blocknum, unsigned int way, unsigned int set) {
 }
 
 float get_miss_rate() {
+
+    if (cache->accesses == 0) return -1;
+
     return (cache->misses / cache->accesses);
 }
 

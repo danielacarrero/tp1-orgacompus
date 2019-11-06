@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define MEMSIZE 65536
 #define BLOCKSIZE 64
@@ -29,7 +30,7 @@ unsigned int get_offset (unsigned int address);
 
 unsigned int find_set(unsigned int address);
 
-unsigned int get_tag(unsigned int address);
+char get_tag(unsigned int address);
 
 unsigned int select_oldest(unsigned int setnum);
 
