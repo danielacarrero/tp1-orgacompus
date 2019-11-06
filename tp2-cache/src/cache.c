@@ -11,19 +11,12 @@ struct memory_t* memory;
 unsigned int time = 0;
 
 void init() {
-    cache = (struct cache_t*) calloc(1 , sizeof(struct cache_t));
 
-    if (!cache) {
-        free(cache);
-        panic("rompiste todo: cache en calloc");
-    }
+    if(!cache || !memory) return;
 
-    memory = (struct memory_t*) calloc(1, sizeof(struct memory_t));
-
-    if (!memory) {
-        free(memory);
-        panic("rompiste todo: memory en calloc");
-    }
+    memset(cache, 0, sizeof(struct cache_t));
+    memset(memory, 0, sizeof(struct memory_t));
+    
 }
 
 unsigned int get_offset (unsigned int address) {
@@ -147,4 +140,27 @@ void write_tomem(unsigned int blocknum, unsigned int way, unsigned int set) {
 
 float get_miss_rate() {
     return (cache->misses / cache->accesses);
+}
+
+int create_cache_and_memory(){
+    cache = (struct cache_t*) calloc(1, sizeof(struct cache_t));
+
+    if (!cache) {
+        free(cache);
+        return -1;
+    }
+
+    memory = (struct memory_t*) calloc(1, sizeof(struct memory_t));
+
+    if (!memory) {
+        destroy_cache_and_memory();
+        return -1;
+    }
+
+    return 0;
+}
+
+void destroy_cache_and_memory(){
+    free(cache);
+    free(memory);
 }

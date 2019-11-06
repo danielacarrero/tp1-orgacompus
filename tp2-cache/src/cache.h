@@ -42,3 +42,7 @@ void write_byte(unsigned int address, unsigned char value);
 void write_tomem(unsigned int blocknum, unsigned int way, unsigned int set);
 
 float get_miss_rate();
+
+int create_cache_and_memory();
+
+void destroy_cache_and_memory();
