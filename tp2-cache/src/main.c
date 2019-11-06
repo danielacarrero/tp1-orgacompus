@@ -51,6 +51,13 @@ int main(int argc, char** argv) {
         else if(strcmp(words[0], "R") == 0){
 
             unsigned int address = atoi(words[1]);
+
+            if(address > 65535){
+                printf("Error con el parametro en R\n");
+                fclose(comandos);
+                exit(-1);
+            }
+
             unsigned char byte = read_byte(address);
 
             printf("El valor del byte leido es de: %c\n", byte);
@@ -59,6 +66,12 @@ int main(int argc, char** argv) {
 
             unsigned int address = atoi(words[1]);
             unsigned int value = atoi(words[2]);
+
+            if(value > 255 || address > 65535){
+                printf("Error con el parametro en W\n");
+                fclose(comandos);
+                exit(-1);
+            }
 
             write_byte(address, (char)value);
         }
