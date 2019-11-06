@@ -58,9 +58,7 @@ void read_tocache(unsigned int blocknum, unsigned int way, unsigned int set) {
     for (unsigned int i = 0; i < BLOCKSIZE; i++) {
         cache->data[set + (way * WAYSIZE)].data[i] = memory->data[blocknum + i];
     }
-    cache->data[set + (way * WAYSIZE)].timestamp = time;
     cache->data[set + (way * WAYSIZE)].validation = 1;
-    time++;
 }
 
 unsigned char read_byte(unsigned int address) {
@@ -69,6 +67,7 @@ unsigned char read_byte(unsigned int address) {
 
     unsigned int tag = get_tag(address);
     unsigned int set = find_set(address);
+    unsigned int offset = get_offset(address);
     unsigned int way = ERROR;
     int found = 0;
 
@@ -91,18 +90,53 @@ unsigned char read_byte(unsigned int address) {
     if (!found) {
         cache->misses++;
         read_tocache(address, way, set);
+        cache->data[set + (way * WAYSIZE)].tag = tag;
     }
 
-    unsigned int offset = get_offset(address);
+    cache->data[set + (way * WAYSIZE)].timestamp = time++;
 
     return cache->data[set + (way * WAYSIZE)].data[offset];
 }
 
 void write_byte(unsigned int address, unsigned char value) {
+    
+    cache->accesses++;
 
+    unsigned int tag = get_tag(address);
+    unsigned int set = find_set(address);
+    unsigned int offset = get_offset(address);
+    unsigned int way = ERROR;
+    int found = 0;
+
+    for (unsigned int i = 0; i < WAYS; i++) {
+        if (cache->data[set + (i * WAYSIZE)].tag == tag && cache->data[set + (i * WAYSIZE)].validation == 1) {
+            way = i;
+            found = 1;
+            break;
+        }
+
+        if (cache->data[set + (i * WAYSIZE)].validation == 0) {
+            way = i;
+        }
+    }
+
+    if (way == ERROR) {
+        way = select_oldest(set);
+    }
+
+    if (!found) {
+        cache->misses++;
+        cache->data[set + (way * WAYSIZE)].validation = 1;
+        cache->data[set + (way * WAYSIZE)].tag = tag;
+    }
+
+    cache->data[set + (way * WAYSIZE)].timestamp = time++;
+
+    cache->data[set + (way * WAYSIZE)].data[offset] = value;
+    
 }
 
-void write_tomem(unsigned int address, unsigned char value) {
+void write_tomem(unsigned int blocknum, unsigned int way, unsigned int set) {
 
 }
 

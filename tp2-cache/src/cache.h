@@ -39,6 +39,6 @@ unsigned char read_byte(unsigned int address);
 
 void write_byte(unsigned int address, unsigned char value);
 
-void write_tomem(unsigned int address, unsigned char value);
+void write_tomem(unsigned int blocknum, unsigned int way, unsigned int set);
 
 float get_miss_rate();
