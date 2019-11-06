@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
 
             unsigned int address = atoi(words[1]);
 
-            if(address > 65535){
+            if(address > MEMSIZE - 1){
                 printf("Error con el parametro en R\n");
                 fclose(comandos);
                 exit(-1);
@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
             unsigned int address = atoi(words[1]);
             unsigned int value = atoi(words[2]);
 
-            if(value > 255 || address > 65535){
+            if(value > UCHARMAX || address > MEMSIZE - 1){
                 printf("Error con el parametro en W\n");
                 fclose(comandos);
                 exit(-1);

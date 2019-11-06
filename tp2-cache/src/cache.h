@@ -6,6 +6,7 @@
 #define BLOCKSIZE 64
 #define WAYSIZE 32
 #define WAYS 8
+#define UCHARMAX 255
 
 struct cache_block_t {
     char data[BLOCKSIZE];
