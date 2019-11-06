@@ -122,7 +122,12 @@ void write_byte(unsigned int address, unsigned char value) {
 
     if (way == ERROR) {
         way = select_oldest(set);
+        memset(cache->data[set + (way * WAYSIZE)].data, 0, BLOCKSIZE*sizeof(char));
     }
+
+    cache->data[set + (way * WAYSIZE)].timestamp = time++;
+    
+    cache->data[set + (way * WAYSIZE)].data[offset] = value;
 
     if (!found) {
         cache->misses++;
@@ -130,14 +135,7 @@ void write_byte(unsigned int address, unsigned char value) {
         cache->data[set + (way * WAYSIZE)].tag = tag;
         //Como aca hubo un miss habría que ver cuando hacer el write back y escribirlo en mem
         // principal con la funcion write_tomem()
-        //Duda. Si ya habia otro valores en el bloque y se lo reemplaza. No habria que poner todo el bloque
-        // de 64B en 0? 
     }
-
-    cache->data[set + (way * WAYSIZE)].timestamp = time++;
-
-    cache->data[set + (way * WAYSIZE)].data[offset] = value;
-    
 }
 
 void write_tomem(unsigned int blocknum, unsigned int way, unsigned int set) {
