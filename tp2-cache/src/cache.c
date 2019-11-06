@@ -128,6 +128,10 @@ void write_byte(unsigned int address, unsigned char value) {
         cache->misses++;
         cache->data[set + (way * WAYSIZE)].validation = 1;
         cache->data[set + (way * WAYSIZE)].tag = tag;
+        //Como aca hubo un miss habría que ver cuando hacer el write back y escribirlo en mem
+        // principal con la funcion write_tomem()
+        //Duda. Si ya habia otro valores en el bloque y se lo reemplaza. No habria que poner todo el bloque
+        // de 64B en 0? 
     }
 
     cache->data[set + (way * WAYSIZE)].timestamp = time++;
@@ -137,7 +141,10 @@ void write_byte(unsigned int address, unsigned char value) {
 }
 
 void write_tomem(unsigned int blocknum, unsigned int way, unsigned int set) {
-
+    
+    for (unsigned int i = 0; i < BLOCKSIZE; i++) {
+        memory->data[blocknum + i] = cache->data[set + (way * WAYSIZE)].data[i];
+    }
 }
 
 float get_miss_rate() {
