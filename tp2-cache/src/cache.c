@@ -87,6 +87,8 @@ unsigned char read_byte(unsigned int address) {
 
     if (way == ERROR) {
         way = select_oldest(set);
+        unsigned int old_address = make_address((unsigned int)cache->data[set + (way * WAYSIZE)].tag, set, 0);
+        write_tomem(old_address, way, set);
     }
 
     if (!found) {
@@ -126,18 +128,19 @@ void write_byte(unsigned int address, unsigned char value) {
         way = select_oldest(set);
         unsigned int old_address = make_address((unsigned int)cache->data[set + (way * WAYSIZE)].tag, set, 0);
         write_tomem(old_address, way, set);
-        memset(cache->data[set + (way * WAYSIZE)].data, 0, BLOCKSIZE*sizeof(char));
     }
-
-    cache->data[set + (way * WAYSIZE)].timestamp = time++;
-    
-    cache->data[set + (way * WAYSIZE)].data[offset] = value;
 
     if (!found) {
         cache->misses++;
         cache->data[set + (way * WAYSIZE)].validation = 1;
         cache->data[set + (way * WAYSIZE)].tag = tag;
+
+        read_tocache(address & OFFSET_TO_ZERO, way, set);
     }
+
+    cache->data[set + (way * WAYSIZE)].timestamp = time++;
+    
+    cache->data[set + (way * WAYSIZE)].data[offset] = value;
 }
 
 void write_tomem(unsigned int blocknum, unsigned int way, unsigned int set) {
