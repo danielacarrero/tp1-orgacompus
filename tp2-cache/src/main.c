@@ -30,6 +30,8 @@ int main(int argc, char** argv) {
         exit(-1);
     }
 
+    init();
+
     FILE *comandos;
     comandos = fopen(argv[1], "r");
     if(!comandos){
@@ -60,7 +62,7 @@ int main(int argc, char** argv) {
 
             unsigned char byte = read_byte(address);
 
-            printf("El valor del byte leido es de: %c\n", byte);
+            printf("El valor del byte leido es de: %i\n", (__uint8_t)byte);
         }
         else if(strcmp(words[0], "W") == 0){
 

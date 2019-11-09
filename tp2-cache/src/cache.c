@@ -3,12 +3,21 @@
 #define OFFSET_MASK 63
 #define INDEX_MASK 1984
 #define TAG_MASK 63488
+#define OFFSET_TO_ZERO 65472
 #define ERROR 9
 
 struct cache_t* cache;
 struct memory_t* memory;
 
 unsigned int time = 0;
+
+unsigned int make_address(unsigned int tag, unsigned int set, unsigned offset){
+
+    tag = tag << 11;
+    set = set << 6;
+    
+    return (tag | set | offset);
+}
 
 void init() {
 
@@ -24,11 +33,11 @@ unsigned int get_offset (unsigned int address) {
 }
 
 unsigned int find_set(unsigned int address) {
-    return (address & INDEX_MASK); // Pone todo en cero y se queda con los bits de index
+    return ((address & INDEX_MASK) >> 6); // Pone todo en cero y se queda con los bits de index
 }
 
 char get_tag(unsigned int address) {
-    return (char)(address & TAG_MASK); // Pone todo en cero y se queda con los bits de tag
+    return (char)((address & TAG_MASK) >> 11); // Pone todo en cero y se queda con los bits de tag
 }
 
 unsigned int select_oldest(unsigned int setnum) {
@@ -82,7 +91,7 @@ unsigned char read_byte(unsigned int address) {
 
     if (!found) {
         cache->misses++;
-        read_tocache(address, way, set);
+        read_tocache(address & OFFSET_TO_ZERO, way, set);
         cache->data[set + (way * WAYSIZE)].tag = tag;
     }
 
@@ -115,6 +124,8 @@ void write_byte(unsigned int address, unsigned char value) {
 
     if (way == ERROR) {
         way = select_oldest(set);
+        unsigned int old_address = make_address((unsigned int)cache->data[set + (way * WAYSIZE)].tag, set, 0);
+        write_tomem(old_address, way, set);
         memset(cache->data[set + (way * WAYSIZE)].data, 0, BLOCKSIZE*sizeof(char));
     }
 
@@ -126,8 +137,6 @@ void write_byte(unsigned int address, unsigned char value) {
         cache->misses++;
         cache->data[set + (way * WAYSIZE)].validation = 1;
         cache->data[set + (way * WAYSIZE)].tag = tag;
-        //Como aca hubo un miss habría que ver cuando hacer el write back y escribirlo en mem
-        // principal con la funcion write_tomem()
     }
 }
 

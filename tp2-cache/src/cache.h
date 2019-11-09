@@ -17,8 +17,8 @@ struct cache_block_t {
 
 struct cache_t {
     struct cache_block_t data[WAYS * WAYSIZE];
-    size_t accesses;
-    size_t misses;
+    float accesses;
+    float misses;
 };
 
 struct memory_t {
